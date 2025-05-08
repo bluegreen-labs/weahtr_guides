@@ -30,6 +30,6 @@ Create guides in GIMP by clicking and holding in the side or top margins (rulers
 
 The guide will show up as a coloured line. Releasing your mouse button will drop the guide in place. You can undo mistakes using `CTRL-z`, or clearing the whole image of guides using `Image - Guides - Remove all Guides`.
 
-To save the guides go to `Image - Guides - weahtr Save guides ...` and select an output directory and manually enter a new filename if desired. The output data is a JSON file with the source filename and pixel coordinates of rows and columns.
+To save the guides go to `Image - Guides - weahtr Save guides ...` and select an output directory and manually enter a new filename if desired. Click `OK` to save the data to file. The output data is a JSON file with the source filename and pixel coordinates of rows and columns.
 
 ![](plugin_use.gif)
