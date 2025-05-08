@@ -1,6 +1,6 @@
-# Saves guides for the weahtr ML workflow
+# Saves guides for the weaHTR framework
 
-This GIMP plug-in complements the weaHTR ML workflow for automated climate data recovery. When creating a table template the plug-in allows you to export the boundaries of rows and columns, or singlular regions of interest.
+This GIMP plug-in complements the weaHTR ML workflow for automated climate data recovery. When creating a table template the plug-in allows you to export the boundaries of rows and columns, or single regions of interest.
 
 ## Install
 
