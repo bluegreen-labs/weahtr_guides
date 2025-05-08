@@ -9,7 +9,8 @@ Download the plugin using the [following link](https://github.com/khufkens/weaht
 ```bash
 git clone https://github.com/khufkens/weahtr_guides.git
 ```
-Next, make the python script executable by setting the correct permissions. In Unix based systems this can be done using the following command line code:
+
+The data should clone into a directory called `weathr_guides`, if this is not the case rename it to `weahtr_guides`. Next, make the python script in this directory executable by setting the correct permissions. In Unix based systems this can be done using the following command line code:
 
 ```bash
 chmod +x weahtr_guides.py
@@ -19,9 +20,7 @@ Right clicking on the file to access the file options will generally give access
 
 ### GIMP settings
 
-For this plug-in to work you will need a recent GIMP version (2.10), and the flatpak version of GIMP when using linux (to ensure python 2.7 support).
-
-To activate the plug-in, open the GIMP preferences using the `Edit - Preferences` menu and enter the `Folders - Plug-ins` section. Add the directory where the `weahtr_guides.py` file is located to the list of directories. and restart GIMP.
+For this plug-in to work you will need a recent GIMP version 3. To activate the plug-in, open the GIMP preferences using the `Edit - Preferences` menu and enter the `Folders - Plug-ins` section. Add the directory where the `weahtr_guides` folder is located to the list of directories (you can copy the folder to a dedicated GIMP plugin folder) and restart GIMP.
 
 ![](preferences.png)
 
@@ -31,6 +30,6 @@ Create guides in GIMP by clicking and holding in the side or top margins (rulers
 
 The guide will show up as a coloured line. Releasing your mouse button will drop the guide in place. You can undo mistakes using `CTRL-z`, or clearing the whole image of guides using `Image - Guides - Remove all Guides`.
 
-To save the guides go to `Image - Guides - weahtr Save guides ...` and select an output directory and filename. The output data is a JSON file with the source filename and pixel coordinates of rows and columns.
+To save the guides go to `Image - Guides - weahtr Save guides ...` and select an output directory and manually enter a new filename if desired. The output data is a JSON file with the source filename and pixel coordinates of rows and columns.
 
 ![](plugin_use.gif)

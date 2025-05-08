@@ -1,65 +1,113 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-import math
-from gimpfu import *
-import os
+import gi
+gi.require_version('Gimp', '3.0')
+from gi.repository import Gimp
+gi.require_version('GimpUi', '3.0')
+from gi.repository import GimpUi
+from gi.repository import GObject
+from gi.repository import GLib
+from gi.repository import Gtk
+import sys, math, os
 
-def weahtr_save_guides(image, directory_name, filename):
+plug_in_proc = "weahtr-guides"
+
+def weaHTR_guides_run(procedure, run_mode, image, drawables, config, data):
+  if len(drawables) > 1:
+    return procedure.new_return_values(
+         Gimp.PDBStatusType.CALLING_ERROR,
+         GLib.Error(f"Procedure '{plug_in_proc}' works with zero or one layer.")
+         )
+  elif len(drawables) == 1:
+    if not isinstance(drawables[0], Gimp.Layer):
+      return procedure.new_return_values(
+         Gimp.PDBStatusType.CALLING_ERROR,
+         GLib.Error(f"Procedure '{plug_in_proc}' works with layers only.")
+         )
+
+  # GUI stuff -----
+  if run_mode == Gimp.RunMode.INTERACTIVE:
+    GimpUi.init(plug_in_proc)
+
+    # setup GUI
+    dialog = GimpUi.ProcedureDialog.new(procedure, config, "weaHTR Guides")
+    dialog.fill(["dir", "text"])
+    
+    if not dialog.run():
+      dialog.destroy()
+      return procedure.new_return_values(Gimp.PDBStatusType.CANCEL, None)
+    else:
+      dialog.destroy()
+
+  # actual plugin functionality ------
+
+  file         = config.get_property('text')
+  directory    = config.get_property('dir')
+  filename = os.path.join(directory, file)
+
   # open session
-  pdb.gimp_context_push()
+  Gimp.context_push()
   
   # create list elements to store guide details
   rows = []
   cols = []
 
   # collect all guide values
-  index = pdb.gimp_image_find_next_guide(image,0)
+  index = Gimp.Image.find_next_guide(image,0)
   while index > 0:
-    if pdb.gimp_image_get_guide_orientation(image, index) == ORIENTATION_HORIZONTAL:
-      rows.append(pdb.gimp_image_get_guide_position(image, index))
+    if Gimp.Image.get_guide_orientation(image, index) == Gimp.OrientationType.HORIZONTAL:
+      rows.append(Gimp.Image.get_guide_position(image, index))
     else:
-      cols.append(pdb.gimp_image_get_guide_position(image, index))
+      cols.append(Gimp.Image.get_guide_position(image, index))
     
     # increment guide index
-    index = pdb.gimp_image_find_next_guide(image, index)
+    index = Gimp.Image.find_next_guide(image, index)
   
   # sort the values incrementally
   rows = sorted(rows)
   cols = sorted(cols)
   
   # convert to strings
-  img_name = '"filename" : "{}"'.format(os.path.basename(image.filename))
+  img_name = '"filename" : "{}"'.format(os.path.basename(Gimp.Image.get_file(image)))
   rows = '"rows" : [{}]'.format(','.join(map(str,rows))) 
   cols = '"cols" : [{}]'.format(','.join(map(str,cols)))
   
   # save file as json format, manually formatted
   # to avoid too many libraries
-  savefile = open( u'' + os.path.join(directory_name, filename), 'w')
+  savefile = open( u'' + filename, 'w')
   guide_str_data = "{" + img_name + "," + rows + "," + cols + "}"
   savefile.write(guide_str_data + "\n")
   savefile.close()
   
   # close session
-  pdb.gimp_context_pop()
-  pdb.gimp_displays_flush()
+  Gimp.context_pop()
+  Gimp.displays_flush()
 
-register(
-  "python_fu_weahtr_save_guides",
-  "Saves a set of weahtr guides",
-  "Saves a set of weahtr guides...",
-  "Koen Hufkens",
-  "Koen Hufkens",
-  "2024",
-  "weahtr - Save guides...",
-  "*",
-  [
-  (PF_IMAGE, "image", "takes current image", None),
-  (PF_DIRNAME, "directory_name", "Directory:", "/tmp"),
-  (PF_STRING, "filename", "Guides Name:", "weahtr.json"),
-  ],
-  [],
-  weahtr_save_guides,
-  menu="<Image>/Image/Guides"
-)
+  return procedure.new_return_values(Gimp.PDBStatusType.SUCCESS, None)
 
-main()
+class weaHTR_guides (Gimp.PlugIn):
+  def do_query_procedures(self):
+    return [ plug_in_proc ]
+
+  def do_create_procedure(self, name):
+    procedure = None
+
+    if name == plug_in_proc:
+      procedure = Gimp.ImageProcedure.new(self, name,
+                                          Gimp.PDBProcType.PLUGIN,
+                                          weaHTR_guides_run, None)
+      procedure.set_menu_label("_weahtr save guides ...")
+      procedure.set_attribution("Koen Hufkens", "(c) BlueGreen Labs","2025")
+      procedure.add_menu_path ("<Image>/Image/Guides/")
+      procedure.set_documentation ("Plugin to save rows and columns for the weaHTR python workflow.")
+
+      procedure.add_string_argument("text", "Filename", None, "guides.json",
+                                      GObject.ParamFlags.READWRITE)
+      procedure.add_file_argument("dir", "Directory", None,
+                                      Gimp.FileChooserAction.SELECT_FOLDER, True, None,
+                                      GObject.ParamFlags.READWRITE)
+                                      
+    return procedure
+
+Gimp.main(weaHTR_guides.__gtype__, sys.argv)
