@@ -20,9 +20,12 @@ Right clicking on the file to access the file options will generally give access
 
 ### GIMP settings
 
-For this plug-in to work you will need a recent GIMP version 3. To activate the plug-in, open the GIMP preferences using the `Edit - Preferences` menu and enter the `Folders - Plug-ins` section. Add the directory where the `weahtr_guides` folder is located to the list of directories (you can copy the folder to a dedicated GIMP plugin folder) and restart GIMP.
+For this plug-in to work you will need a recent GIMP version 3. To activate the plug-in, open the GIMP preferences using the `Edit - Preferences` menu and enter the `Folders - Plug-ins` section. Add the directory where the `weahtr_guides` folder is located (not the application directory itself) to the list of directories where plugins reside (you can copy the folder to a dedicated GIMP plugin folder) and restart GIMP.
 
 ![](preferences.png)
+
+> [!NOTE]
+> You might need the GIMP flatpak install on linux as .deb or other package manager based installs might not include the proper python environment for the plugin to run.
 
 ## Use
 
